@@ -59,7 +59,7 @@ namespace ASIapiREST.Models.EntityFramework
                 entity.HasIndex(u => u.Email).IsUnique();
 
                 entity.Property(u => u.Pays).HasDefaultValue("France");
-                entity.Property(u => u.DateCreation).HasDefaultValue(DateTime.UtcNow);
+                entity.Property(u => u.DateCreation).HasDefaultValueSql("now()");
             });
 
             OnModelCreatingPartial(modelBuilder);

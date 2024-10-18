@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ASIapiREST.Migrations
 {
     [DbContext(typeof(SerieDBContext))]
-    [Migration("20241018094506_CreationBDSeries")]
+    [Migration("20241018100634_CreationBDSeries")]
     partial class CreationBDSeries
     {
         /// <inheritdoc />
@@ -110,8 +110,8 @@ namespace ASIapiREST.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 10, 18, 9, 45, 6, 185, DateTimeKind.Utc).AddTicks(9822))
-                        .HasColumnName("utl_datecreation");
+                        .HasColumnName("utl_datecreation")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<string>("Email")
                         .IsRequired()

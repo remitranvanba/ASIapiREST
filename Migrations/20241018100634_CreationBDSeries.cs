@@ -52,7 +52,7 @@ namespace ASIapiREST.Migrations
                     utl_pays = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true, defaultValue: "France"),
                     utl_latitude = table.Column<float>(type: "real", nullable: true),
                     utl_longitude = table.Column<float>(type: "real", nullable: true),
-                    utl_datecreation = table.Column<DateTime>(type: "timestamp with time zone", maxLength: 50, nullable: false, defaultValue: new DateTime(2024, 10, 18, 9, 45, 6, 185, DateTimeKind.Utc).AddTicks(9822))
+                    utl_datecreation = table.Column<DateTime>(type: "timestamp with time zone", maxLength: 50, nullable: false, defaultValueSql: "now()")
                 },
                 constraints: table =>
                 {
