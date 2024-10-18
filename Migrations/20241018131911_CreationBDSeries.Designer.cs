@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ASIapiREST.Migrations
 {
     [DbContext(typeof(SerieDBContext))]
-    [Migration("20241018100634_CreationBDSeries")]
+    [Migration("20241018131911_CreationBDSeries")]
     partial class CreationBDSeries
     {
         /// <inheritdoc />
@@ -80,8 +80,8 @@ namespace ASIapiREST.Migrations
 
                     b.Property<string>("Titre")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("ser_titre");
 
                     b.HasKey("SerieId")

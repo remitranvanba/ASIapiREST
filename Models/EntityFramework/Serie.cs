@@ -12,7 +12,7 @@ namespace ASIapiREST.Models.EntityFramework
         public int SerieId { get; set; }
 
         [Column("ser_titre")]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Titre { get; set; } = null!;
 
         [Column("ser_resume")]

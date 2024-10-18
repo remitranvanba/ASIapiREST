@@ -77,8 +77,8 @@ namespace ASIapiREST.Migrations
 
                     b.Property<string>("Titre")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("ser_titre");
 
                     b.HasKey("SerieId")
