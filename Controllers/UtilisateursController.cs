@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ASIapiREST.Models.EntityFramework;
 using System.Net;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace ASIapiREST.Controllers
 {
@@ -101,8 +102,14 @@ namespace ASIapiREST.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [ProducesResponseType<Utilisateur>(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Utilisateur>> PostUtilisateur(Utilisateur utilisateur)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _context.Utilisateurs.Add(utilisateur);
             await _context.SaveChangesAsync();
 
@@ -124,6 +131,32 @@ namespace ASIapiREST.Controllers
 
         //    return NoContent();
         //}
+
+        [HttpPatch("{id:int}")]
+        [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> PatchUtilisateur(int id, [FromBody] JsonPatchDocument<Utilisateur> patchEntity)
+        {
+            var entity = await _context.Utilisateurs.FirstOrDefaultAsync(u => u.UtilisateurId == id);
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            patchEntity.ApplyTo(entity, ModelState); // Must have Microsoft.AspNetCore.Mvc.NewtonsoftJson installed
+
+            if (!ModelState.IsValid) 
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Utilisateurs.Update(entity);
+            await _context.SaveChangesAsync();
+
+            return Ok(entity);
+        }
 
         private bool UtilisateurExists(int id)
         {
