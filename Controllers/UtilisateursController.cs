@@ -10,7 +10,7 @@ using System.Net;
 
 namespace ASIapiREST.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UtilisateursController : ControllerBase
     {
@@ -23,15 +23,17 @@ namespace ASIapiREST.Controllers
 
         // GET: api/Utilisateurs
         [HttpGet]
-        [ActionName("GetUtilisateurs")]
+        [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Utilisateur>>> GetUtilisateurs()
         {
             return await _context.Utilisateurs.ToListAsync();
         }
 
-        // GET: api/Utilisateurs/5
-        [HttpGet("{id}")]
-        [ActionName("GetUtilisateurById")]
+        // GET: api/GetUtilisateurById/5
+        [HttpGet]
+        [Route("[action]/{id}")]
+        [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Utilisateur>> GetUtilisateurById(int id)
         {
             var utilisateur = await _context.Utilisateurs.FindAsync(id);
@@ -44,12 +46,14 @@ namespace ASIapiREST.Controllers
             return utilisateur;
         }
 
-        // GET: api/Utilisateurs/5
-        [HttpGet("{email}")]
-        [ActionName("GetUtilisateurByEmail")]
+        // GET: api/GetUtilisateurByEmail/5
+        [HttpGet]
+        [Route("[action]/{email}")]
+        [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Utilisateur>> GetUtilisateurByEmail(string email)
         {
-            var utilisateur = await _context.Utilisateurs.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+            var utilisateur = await _context.Utilisateurs.FirstOrDefaultAsync(u => u.Mail.ToLower() == email.ToLower());
 
             if (utilisateur == null)
             {
@@ -62,7 +66,9 @@ namespace ASIapiREST.Controllers
         // PUT: api/Utilisateurs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [ActionName("PutUtilisateur")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutUtilisateur(int id, Utilisateur utilisateur)
         {
             if (id != utilisateur.UtilisateurId)
@@ -94,7 +100,7 @@ namespace ASIapiREST.Controllers
         // POST: api/Utilisateurs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [ActionName("PostUtilisateur")]
+        [ProducesResponseType<Utilisateur>(StatusCodes.Status201Created)]
         public async Task<ActionResult<Utilisateur>> PostUtilisateur(Utilisateur utilisateur)
         {
             _context.Utilisateurs.Add(utilisateur);
@@ -123,21 +129,6 @@ namespace ASIapiREST.Controllers
         {
             return _context.Utilisateurs.Any(e => e.UtilisateurId == id);
         }
-    }
-
-    [Route("api/[controller]/[action]")]
-    public class ServicesController : ControllerBase
-    {
-        private readonly SerieDBContext _context;
-
-        public ServicesController(SerieDBContext context)
-        {
-            _context = context;
-        }
-
-        
-
-
     }
 }
 

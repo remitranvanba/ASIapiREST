@@ -25,14 +25,18 @@ namespace ASIapiREST.Models.EntityFramework
         public string? Prenom { get; set; }
 
         [Column("utl_mobile", TypeName = "char(10)")]
+        [RegularExpression(@"^0[0-9]{9}$", ErrorMessage = "Le mobile doit contenir 10 chiffres")]
         [StringLength(10)]
         public string? Mobile { get; set; }
 
+        [Required]
         [Column("utl_mail")]
-        [StringLength(100)]
-        public string Email { get; set; } = null!;
+        [EmailAddress(ErrorMessage = "Le champ Mail n'est pas une adresse email valide.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "La longueur d’un email doit être comprise entre 6 et 100 caractères")]
+        public string Mail { get; set; } = null!;
 
         [Column("utl_pwd")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,10}$", ErrorMessage = "Le mot de passe doit contenir entre 6 et 10 caractères avec au moins 1 lettre majuscule, 1 chiffre et 1 caractère spécial")]
         [StringLength(64)]
         public string Pwd { get; set; } = null!;
 
@@ -41,6 +45,7 @@ namespace ASIapiREST.Models.EntityFramework
         public string? Rue { get; set; }
 
         [Column("utl_cp", TypeName = "char(5)")]
+        [RegularExpression(@"[0-9]{5}$", ErrorMessage = "Le code postal doit contenir 5 chiffres")]
         [StringLength(5)]
         public string? CodePostal { get; set; }
 
@@ -59,7 +64,6 @@ namespace ASIapiREST.Models.EntityFramework
         public float? Longitude { get; set; }
 
         [Column("utl_datecreation")]
-        [StringLength(50)]
         public DateTime DateCreation { get; set; }
 
         [InverseProperty("UtilisateurNotant")]

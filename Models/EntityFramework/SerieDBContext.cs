@@ -56,7 +56,7 @@ namespace ASIapiREST.Models.EntityFramework
             {
                 entity.HasKey(e => e.UtilisateurId).HasName("pk_utl");
 
-                entity.HasIndex(u => u.Email).IsUnique();
+                entity.HasIndex(u => u.Mail).IsUnique();
 
                 entity.Property(u => u.Pays).HasDefaultValue("France");
                 entity.Property(u => u.DateCreation).HasDefaultValueSql("now()");
