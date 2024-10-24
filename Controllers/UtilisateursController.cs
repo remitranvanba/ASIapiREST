@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using ASIapiREST.Models.EntityFramework;
 using System.Net;
 using Microsoft.AspNetCore.JsonPatch;
+using ASIapiREST.Models.DataManager;
+using ASIapiREST.Models.Repository;
 
 namespace ASIapiREST.Controllers
 {
@@ -15,11 +17,12 @@ namespace ASIapiREST.Controllers
     [ApiController]
     public class UtilisateursController : ControllerBase
     {
-        private readonly SerieDBContext _context;
+        private readonly IDataRepository<Utilisateur> dataRepository;
+        //private readonly SerieDBContext _context;
 
-        public UtilisateursController(SerieDBContext context)
+        public UtilisateursController(IDataRepository<Utilisateur> dataRepo)
         {
-            _context = context;
+            dataRepository = dataRepo;
         }
 
         // GET: api/Utilisateurs
@@ -27,7 +30,7 @@ namespace ASIapiREST.Controllers
         [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Utilisateur>>> GetUtilisateurs()
         {
-            return await _context.Utilisateurs.ToListAsync();
+            return await dataRepository.GetAllAsync();
         }
 
         // GET: api/GetUtilisateurById/5
@@ -37,7 +40,8 @@ namespace ASIapiREST.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Utilisateur>> GetUtilisateurById(int id)
         {
-            var utilisateur = await _context.Utilisateurs.FindAsync(id);
+            var utilisateur = await dataRepository.GetByIdAsync(id);
+            //var utilisateur = _context.Utilisateurs.FindAsync(id);
 
             if (utilisateur == null)
             {
@@ -54,7 +58,8 @@ namespace ASIapiREST.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Utilisateur>> GetUtilisateurByEmail(string email)
         {
-            var utilisateur = await _context.Utilisateurs.FirstOrDefaultAsync(u => u.Mail.ToLower() == email.ToLower());
+            var utilisateur = await dataRepository.GetByStringAsync(email);
+            //var utilisateur = _context.Utilisateurs.FirstOrDefaultAsync(u => u.Mail.ToLower() == email.ToLower());
 
             if (utilisateur == null)
             {
@@ -77,25 +82,16 @@ namespace ASIapiREST.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(utilisateur).State = EntityState.Modified;
-
-            try
+            var userToUpdate = await dataRepository.GetByIdAsync(id);
+            if (userToUpdate.Value == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!UtilisateurExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                await dataRepository.UpdateAsync(userToUpdate.Value, utilisateur);
+                return NoContent();
             }
-
-            return NoContent();
         }
 
         // POST: api/Utilisateurs
@@ -110,27 +106,24 @@ namespace ASIapiREST.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.Utilisateurs.Add(utilisateur);
-            await _context.SaveChangesAsync();
+            await dataRepository.AddAsync(utilisateur);
 
-            return CreatedAtAction("GetUtilisateur", new { id = utilisateur.UtilisateurId }, utilisateur);
+            return CreatedAtAction("GetUtilisateurById", new { id = utilisateur.UtilisateurId }, utilisateur);
         }
 
         // DELETE: api/Utilisateurs/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteUtilisateur(int id)
-        //{
-        //    var utilisateur = await _context.Utilisateurs.FindAsync(id);
-        //    if (utilisateur == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUtilisateur(int id)
+        {
+            var utilisateur = await dataRepository.GetByIdAsync(id);
+            if (utilisateur.Value == null)
+            {
+                return NotFound();
+            }
 
-        //    _context.Utilisateurs.Remove(utilisateur);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
+            await dataRepository.DeleteAsync(utilisateur.Value);
+            return NoContent();
+        }
 
         [HttpPatch("{id:int}")]
         [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
@@ -138,30 +131,28 @@ namespace ASIapiREST.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> PatchUtilisateur(int id, [FromBody] JsonPatchDocument<Utilisateur> patchEntity)
         {
-            var entity = await _context.Utilisateurs.FirstOrDefaultAsync(u => u.UtilisateurId == id);
+            var entity = await dataRepository.GetByIdAsync(id);
 
-            if (entity == null)
+            if (entity.Value == null)
             {
                 return NotFound();
             }
 
-            patchEntity.ApplyTo(entity, ModelState); // Must have Microsoft.AspNetCore.Mvc.NewtonsoftJson installed
+            patchEntity.ApplyTo(entity.Value, ModelState); // Must have Microsoft.AspNetCore.Mvc.NewtonsoftJson installed
 
             if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Utilisateurs.Update(entity);
-            await _context.SaveChangesAsync();
-
+            //dataRepository.Update(entity);
             return Ok(entity);
         }
 
-        private bool UtilisateurExists(int id)
-        {
-            return _context.Utilisateurs.Any(e => e.UtilisateurId == id);
-        }
+        //private bool UtilisateurExists(int id)
+        //{
+        //    return _context.Utilisateurs.Any(e => e.UtilisateurId == id);
+        //}
     }
 }
 
