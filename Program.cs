@@ -1,4 +1,5 @@
 using ASIapiREST.Models.DataManager;
+using ASIapiREST.Models.DTO;
 using ASIapiREST.Models.EntityFramework;
 using ASIapiREST.Models.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -13,8 +14,10 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddScoped<IDataRepository<Utilisateur>, UtilisateurManager>();
+builder.Services.AddScoped<IDataRepository<UtilisateurDTO>, UtilisateurManager>();
+builder.Services.AddScoped<IDataRepository<UtilisateurDetailDTO>, UtilisateurDetailManager>();
 
 var app = builder.Build();
 

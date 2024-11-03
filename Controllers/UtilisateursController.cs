@@ -10,6 +10,8 @@ using System.Net;
 using Microsoft.AspNetCore.JsonPatch;
 using ASIapiREST.Models.DataManager;
 using ASIapiREST.Models.Repository;
+using AutoMapper;
+using ASIapiREST.Models.DTO;
 
 namespace ASIapiREST.Controllers
 {
@@ -17,56 +19,68 @@ namespace ASIapiREST.Controllers
     [ApiController]
     public class UtilisateursController : ControllerBase
     {
-        private readonly IDataRepository<Utilisateur> dataRepository;
+        private readonly IDataRepository<UtilisateurDTO> userRepository;
+        private readonly IDataRepository<UtilisateurDetailDTO> userDetailRepository;
+
         //private readonly SerieDBContext _context;
 
-        public UtilisateursController(IDataRepository<Utilisateur> dataRepo)
+        public UtilisateursController(IDataRepository<UtilisateurDTO> userRepo, IDataRepository<UtilisateurDetailDTO> userDetailRepo)
         {
-            dataRepository = dataRepo;
+            userRepository = userRepo;
+            userDetailRepository = userDetailRepo;
         }
 
         // GET: api/Utilisateurs
         [HttpGet]
-        [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Utilisateur>>> GetUtilisateurs()
+        [ProducesResponseType<UtilisateurDTO>(StatusCodes.Status200OK)]
+        [ProducesResponseType<UtilisateurDTO>(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult<IEnumerable<UtilisateurDTO>>> GetUtilisateurs()
         {
-            return await dataRepository.GetAllAsync();
+            var listUtilisateurs = await userRepository.GetAllAsync();
+
+            if (listUtilisateurs.Value == null)
+            {
+                return NoContent();
+            }
+
+            return listUtilisateurs;
+
         }
 
         // GET: api/GetUtilisateurById/5
         [HttpGet]
         [Route("[action]/{id}")]
-        [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
+        [ProducesResponseType<UtilisateurDetailDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Utilisateur>> GetUtilisateurById(int id)
+        public async Task<ActionResult<UtilisateurDetailDTO>> GetUtilisateurById(int id)
         {
-            var utilisateur = await dataRepository.GetByIdAsync(id);
+            var utilisateurDto = await userDetailRepository.GetByIdAsync(id);
             //var utilisateur = _context.Utilisateurs.FindAsync(id);
 
-            if (utilisateur == null)
+            if (utilisateurDto == null)
             {
                 return NotFound();
             }
 
-            return utilisateur;
+            return utilisateurDto;
         }
 
         // GET: api/GetUtilisateurByEmail/5
         [HttpGet]
         [Route("[action]/{email}")]
-        [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
+        [ProducesResponseType<UtilisateurDetailDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Utilisateur>> GetUtilisateurByEmail(string email)
+        public async Task<ActionResult<UtilisateurDetailDTO>> GetUtilisateurByEmail(string email)
         {
-            var utilisateur = await dataRepository.GetByStringAsync(email);
+            var utilisateurDto = await userDetailRepository.GetByStringAsync(email);
             //var utilisateur = _context.Utilisateurs.FirstOrDefaultAsync(u => u.Mail.ToLower() == email.ToLower());
 
-            if (utilisateur == null)
+            if (utilisateurDto == null)
             {
                 return NotFound();
             }
 
-            return utilisateur;
+            return utilisateurDto;
         }
 
         // PUT: api/Utilisateurs/5
@@ -75,21 +89,21 @@ namespace ASIapiREST.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> PutUtilisateur(int id, Utilisateur utilisateur)
+        public async Task<IActionResult> PutUtilisateur(int id, UtilisateurDetailDTO utilisateurDetailDTO)
         {
-            if (id != utilisateur.UtilisateurId)
+            if (id != utilisateurDetailDTO.UtilisateurId)
             {
                 return BadRequest();
             }
 
-            var userToUpdate = await dataRepository.GetByIdAsync(id);
+            var userToUpdate = await userDetailRepository.GetByIdAsync(id);
             if (userToUpdate.Value == null)
             {
                 return NotFound();
             }
             else
             {
-                await dataRepository.UpdateAsync(userToUpdate.Value, utilisateur);
+                await userDetailRepository.UpdateAsync(userToUpdate.Value, utilisateurDetailDTO);
                 return NoContent();
             }
         }
@@ -97,41 +111,41 @@ namespace ASIapiREST.Controllers
         // POST: api/Utilisateurs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [ProducesResponseType<Utilisateur>(StatusCodes.Status201Created)]
+        [ProducesResponseType<UtilisateurDTO>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Utilisateur>> PostUtilisateur(Utilisateur utilisateur)
+        public async Task<ActionResult<UtilisateurDetailDTO>> PostUtilisateur(UtilisateurDetailDTO utilisateurDetailDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            await dataRepository.AddAsync(utilisateur);
+            await userDetailRepository.AddAsync(utilisateurDetailDTO);
 
-            return CreatedAtAction("GetUtilisateurById", new { id = utilisateur.UtilisateurId }, utilisateur);
+            return CreatedAtAction("GetUtilisateurById", new { id = utilisateurDetailDTO.UtilisateurId }, utilisateurDetailDTO);
         }
 
         // DELETE: api/Utilisateurs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUtilisateur(int id)
         {
-            var utilisateur = await dataRepository.GetByIdAsync(id);
+            var utilisateur = await userDetailRepository.GetByIdAsync(id);
             if (utilisateur.Value == null)
             {
                 return NotFound();
             }
 
-            await dataRepository.DeleteAsync(utilisateur.Value);
+            await userDetailRepository.DeleteAsync(utilisateur.Value);
             return NoContent();
         }
 
         [HttpPatch("{id:int}")]
-        [ProducesResponseType<Utilisateur>(StatusCodes.Status200OK)]
+        [ProducesResponseType<UtilisateurDetailDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> PatchUtilisateur(int id, [FromBody] JsonPatchDocument<Utilisateur> patchEntity)
+        public async Task<ActionResult> PatchUtilisateur(int id, [FromBody] JsonPatchDocument<UtilisateurDetailDTO> patchEntity)
         {
-            var entity = await dataRepository.GetByIdAsync(id);
+            var entity = await userDetailRepository.GetByIdAsync(id);
 
             if (entity.Value == null)
             {

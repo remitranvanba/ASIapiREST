@@ -1,56 +1,56 @@
-﻿using ASIapiREST.Models.EntityFramework;
+﻿using ASIapiREST.Models.DTO;
+using ASIapiREST.Models.EntityFramework;
 using ASIapiREST.Models.Repository;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ASIapiREST.Models.DataManager
 {
-    public class UtilisateurManager : IDataRepository<Utilisateur>
+    public class UtilisateurManager : IDataRepository<UtilisateurDTO>
     {
+        readonly IMapper _mapper;
+
         readonly SerieDBContext? serieDBContext;
         public UtilisateurManager() { }
-        public UtilisateurManager(SerieDBContext context)
+        public UtilisateurManager(SerieDBContext context, IMapper mapper)
         {
+            _mapper = mapper;
             serieDBContext = context;
         }
-        public async Task<ActionResult<IEnumerable<Utilisateur>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<UtilisateurDTO>>> GetAllAsync()
         {
-            return await serieDBContext.Utilisateurs.ToListAsync();
+            var listUtilisateurs = serieDBContext.Utilisateurs.Select(
+                u => new UtilisateurDTO()
+                {
+                    Id = u.UtilisateurId,
+                    Nom = u.Nom,
+                    Prenom = u.Prenom,
+                    NoteMoyenne = u.NotesUtilisateur.Count == 0 ? 0 : u.NotesUtilisateur.Average(n => n.Note)
+                });
+
+            return await listUtilisateurs.ToListAsync();
         }
 
-        public async Task<ActionResult<Utilisateur>> GetByIdAsync(int id)
+        public async Task<ActionResult<UtilisateurDTO>> GetByIdAsync(int id)
         {
-            return await serieDBContext.Utilisateurs.FirstOrDefaultAsync(u => u.UtilisateurId == id);
+            throw new NotImplementedException();
         }
-        public async Task<ActionResult<Utilisateur>> GetByStringAsync(string mail)
+        public async Task<ActionResult<UtilisateurDTO>> GetByStringAsync(string mail)
         {
-            return await serieDBContext.Utilisateurs.FirstOrDefaultAsync(u => u.Mail.ToUpper() == mail.ToUpper());
+            throw new NotImplementedException();
         }
-        public async Task AddAsync(Utilisateur entity)
+        public async Task AddAsync(UtilisateurDTO entityDto)
         {
-            await serieDBContext.Utilisateurs.AddAsync(entity);
-            await serieDBContext.SaveChangesAsync();
+            throw new NotImplementedException();
         }
-        public async Task UpdateAsync(Utilisateur utilisateur, Utilisateur entity)
+        public async Task UpdateAsync(UtilisateurDTO utilisateurDto, UtilisateurDTO entityDto)
         {
-            serieDBContext.Entry(utilisateur).State = EntityState.Modified;
-            utilisateur.UtilisateurId = entity.UtilisateurId;
-            utilisateur.Nom = entity.Nom;
-            utilisateur.Prenom = entity.Prenom;
-            utilisateur.Mail = entity.Mail;
-            utilisateur.Rue = entity.Rue;
-            utilisateur.CodePostal = entity.CodePostal;
-            utilisateur.Ville = entity.Ville;
-            utilisateur.Pays = entity.Pays;
-            utilisateur.Latitude = entity.Latitude;
-            utilisateur.Longitude = entity.Longitude;
-            utilisateur.Pwd = entity.Pwd;
-            utilisateur.Mobile = entity.Mobile;
-            utilisateur.NotesUtilisateur = entity.NotesUtilisateur;
-            await serieDBContext.SaveChangesAsync();
+            throw new NotImplementedException();
         }
-        public async Task DeleteAsync(Utilisateur utilisateur)
+        public async Task DeleteAsync(UtilisateurDTO utilisateurDto)
         {
+            var utilisateur = _mapper.Map<Utilisateur>(utilisateurDto);
             serieDBContext.Utilisateurs.Remove(utilisateur);
             await serieDBContext.SaveChangesAsync();
         }
