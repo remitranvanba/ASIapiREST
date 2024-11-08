@@ -1,0 +1,46 @@
+﻿<Page
+    x:Class="SeriesApp.Views.UtilisateurPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <RelativePanel>
+        <RelativePanel x:Name="mailSearchArea" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                       Margin="50,50" >
+            <TextBlock x:Name="txtMailSearch" Text="Mail" RelativePanel.LeftOf="boxMailSearch"></TextBlock>
+            <TextBox x:Name="boxMailSearch" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                     MinWidth="300" MaxWidth="300"></TextBox>
+            <Button x:Name="btnSearch" RelativePanel.RightOf="boxMailSearch" Click="BtnSearch_Click" Content="Rechercher"></Button>
+        </RelativePanel>
+
+
+        <TextBlock x:Name="txtNom" Text="Nom" RelativePanel.Below="mailSearchArea" RelativePanel.AlignHorizontalCenterWithPanel="True"></TextBlock>
+        <TextBox x:Name="boxNom" RelativePanel.Below="txtNom" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                 MinWidth="200" MaxWidth="200"></TextBox>
+        <TextBlock x:Name="txtPrenom" Text="Prénom" RelativePanel.Below="boxNom" RelativePanel.AlignHorizontalCenterWithPanel="True"></TextBlock>
+        <TextBox x:Name="boxPrenom" RelativePanel.Below="txtPrenom" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                 MinWidth="200" MaxWidth="200"></TextBox>
+        <TextBlock x:Name="txtMobile" Text="Mobile" RelativePanel.Below="boxPrenom" RelativePanel.AlignHorizontalCenterWithPanel="True"></TextBlock>
+        <TextBox x:Name="boxMobile" RelativePanel.Below="txtMobile" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                 MinWidth="200" MaxWidth="200"></TextBox>
+        <TextBlock x:Name="txtMail" Text="Mail" RelativePanel.Below="boxMobile" RelativePanel.AlignHorizontalCenterWithPanel="True"></TextBlock>
+        <TextBox x:Name="boxMail" RelativePanel.Below="txtMail" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                 MinWidth="300" MaxWidth="300"></TextBox>
+        <TextBlock x:Name="txtPassword" Text="Mot de passe" RelativePanel.Below="boxMail" RelativePanel.AlignHorizontalCenterWithPanel="True"></TextBlock>
+        <PasswordBox x:Name="boxPassword" RelativePanel.Below="txtPassword" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                     MinWidth="200" MaxWidth="200"></PasswordBox>
+        <TextBlock x:Name="txtAdresse" Text="Adresse (Rue, CP, Ville Pays)" RelativePanel.Below="boxPassword" RelativePanel.AlignHorizontalCenterWithPanel="True"></TextBlock>
+        <TextBox x:Name="boxRue" RelativePanel.Below="txtAdresse" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                 MinWidth="400" MaxWidth="400"></TextBox>
+        <TextBox x:Name="boxCodePostal" RelativePanel.Below="boxRue" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                 MinWidth="100" MaxWidth="100"></TextBox>
+        <TextBox x:Name="boxVille" RelativePanel.Below="boxCodePostal" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                 MinWidth="200" MaxWidth="200"></TextBox>
+        <TextBox x:Name="boxPays" RelativePanel.Below="boxVille" RelativePanel.AlignHorizontalCenterWithPanel="True"
+                 MinWidth="200" MaxWidth="200"></TextBox>
+    </RelativePanel>
+
+    
+</Page>
